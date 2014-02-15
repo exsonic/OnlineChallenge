@@ -222,6 +222,83 @@ def binarySearchWordListWithEmpty(wordList, left, right, word):
 		return mid
 
 
+def findElementInSortedMatrix_Elimination(m, data):
+	"""
+	M*N matrix
+	Time:O(Max(M,N))
+	Space:O(1)
+
+	Algo: Scan from up right
+	"""
+	row, column = 0, len(m[0]) - 1
+	while row >= 0 and column < len(m[0]):
+		if m[row][column] == data:
+			return data
+		elif m[row][column] < data:
+			row += 1
+		else:
+			column -= 1
+	return None
+
+def findElementInSortedMatrix_BinarySearch(m, data, start, end):
+	"""
+	Psedudo code, not runable
+	"""
+	def getUpLeftValue(m, start, end, mid):
+		if mid[0] - 1 < start[0] or mid[1] - 1 < start[1]:
+			return m[mid[0]][mid[1]]
+		else:
+			return m[mid[0] - 1][mid[1] - 1]
+
+	if start == end:
+		return data if m[start[0]][start[1]] == data else None
+
+	mid = ((start[0] + end[0]) / 2, (start[1] + end[1]) / 2)
+	midValue = m[mid[0]][mid[1]]
+	leftUpValue = getUpLeftValue(m, start, end, mid)
+	if midValue == data or leftUpValue == data:
+		return data
+	elif leftUpValue < data < midValue:
+		# should be on right-up or left down
+		a = findElementInSortedMatrix_BinarySearch(m, data, (mid[0], start[1]), (end[0], mid[1] - 1))
+		b = findElementInSortedMatrix_BinarySearch(m, data, (start[0], mid[1]), (mid[0] - 1, end[1]))
+	elif data > midValue:
+		# eliminate left-up
+		a = findElementInSortedMatrix_BinarySearch(m, data, (mid[1] + 1, start[0]), end)
+		b = findElementInSortedMatrix_BinarySearch(m, data, (start[0], mid[1] + 1), (mid[0] + 1, end[1]))
+	elif data < leftUpValue:
+		# elimnate right dwon
+		a = findElementInSortedMatrix_BinarySearch(m, data, start, (mid[0] - 1, end[1]))
+		b = findElementInSortedMatrix_BinarySearch(m, data, (mid[0] + 1, start[1]), (end[0], mid[1] - 1))
+
+	if a is None and b is None:
+		return None
+	else:
+		return a if a is None else b
+
+def maxPeopleStack(remainPeopleList, bottom, cacheTable):
+	def isCompatible(bottom, person):
+		return bottom is None or (bottom[0] > person[0] and bottom[1] > person[1])
+
+	if not remainPeopleList:
+		return []
+
+	if bottom in cacheTable:
+		return cacheTable[bottom]
+
+	maxStack = []
+	for i, person in enumerate(remainPeopleList):
+		if isCompatible(bottom, person):
+			newRemainPeopleList = remainPeopleList[:i-1] + remainPeopleList[i:]
+			newStack = maxPeopleStack(newRemainPeopleList, person, cacheTable)
+			if len(newStack) > len(maxStack):
+				maxStack = newStack
+
+	maxStack.insert(0, bottom)
+	cacheTable[bottom] = maxStack
+
+	return maxStack
+
 if __name__ == '__main__':
 	n = [5, 1, 3, 4, 2, 0, -1]
 	# bublleSort(n)
@@ -240,5 +317,11 @@ if __name__ == '__main__':
 	# sortListOfWordAndAnagramGroup(wordList)
 	# print(wordList)
 	# print(findIndexOfRotatedArray([5 ,6,7,1,2,3,4], 3))
-	wordList = ['a', '', '', 'b', 'c', '', '', 'd', '', 'e']
-	print(binarySearchWordListWithEmpty(wordList, 0, len(wordList) - 1,''))
+
+	# wordList = ['a', '', '', 'b', 'c', '', '', 'd', '', 'e']
+	# print(binarySearchWordListWithEmpty(wordList, 0, len(wordList) - 1,''))
+
+	# m = [[1,2,3,4],[5,6,7,8],[9, 10,11,12]]
+	# print(findElementInSortedMatrix_Elimination(m, 11))
+	# peopleList = [(65, 100), (70, 150), (56, 90), (75, 190), (60, 95), (68, 110)]
+	# print(maxPeopleStack(peopleList, None, {}))
