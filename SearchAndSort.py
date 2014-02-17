@@ -2,7 +2,6 @@
 Bobi Pu, bobi.pu@usc.edu
 """
 import copy
-from Tree import getTree
 
 
 def bublleSort(n):
@@ -92,7 +91,7 @@ def quickSort(n, start, end):
 	if left < end:
 		quickSort(n, left, end)
 
-def binarySearch(n, left, right, data):
+def binarySearch_Recursive(n, left, right, data):
 	if left == right:
 		if n[left] == data:
 			return data
@@ -101,15 +100,48 @@ def binarySearch(n, left, right, data):
 
 	mid = (left + right) / 2
 	if n[mid] < data:
-		lResult = binarySearch(n, mid + 1, right, data)
+		lResult = binarySearch_Recursive(n, mid + 1, right, data)
 		if lResult is not None:
 			return lResult
 	else:
-		rResult = binarySearch(n, left, mid, data)
+		rResult = binarySearch_Recursive(n, left, mid, data)
 		if rResult is not None:
 			return rResult
 
 	return None
+
+def binarySearch(array, target):
+	"""
+	Correct non-recursive version.
+	Assume array in acsending sorted order.
+	return index of target, if target in array. Else return the index that target should insert to.
+
+	This is the framework of Binary search
+	Because A[start] <= target < A[end] always holds
+	"""
+	start = -1
+	end = len(array)
+	while end - start > 1:
+		mid = (end - start) / 2 + start
+		if array[mid] >= target:
+			end = mid
+		else:
+			start = mid
+	return end
+
+def getSqrt(x):
+	start = -1
+	end = x + 1
+
+	while end - start > 1:
+		mid = (end - start) / 2 + start
+		if mid * mid > x:
+			end = mid
+		else:
+			start = mid
+
+	return start
+
 
 def DFS(root, data):
 	if root is None:
@@ -162,7 +194,6 @@ def mergeTwoSortedArrayFromBack(a, b, a_buffer):
 		b_index -= 1
 	return a
 
-
 def sortListOfWordAndAnagramGroup(wordList):
 	def isAnagram(charCountDict, word):
 		a = copy.deepcopy(charCountDict)
@@ -193,7 +224,6 @@ def sortListOfWordAndAnagramGroup(wordList):
 				wordList[j] = temp
 				swapIndex += 1
 		i = swapIndex
-
 
 def findIndexOfRotatedArray(a, n):
 	for i in range(len(a) - 1):
@@ -299,13 +329,139 @@ def maxPeopleStack(remainPeopleList, bottom, cacheTable):
 
 	return maxStack
 
+def checkWinnerTicTacToe(b):
+	size = len(b)
+	if size < 3:
+		return None
+
+	#check rows
+	for i in range(size):
+		if b[i][0] is not None:
+			for j in range(1, size):
+				if b[i][j] != b[i][j - 1]:
+					break
+			if j == size - 1:
+				return b[i][j]
+
+	#check columns
+	for i in range(size):
+		if b[0][i] is not None:
+			for j in range(1, size):
+				if b[j][i] != b[j][i - 1]:
+					break
+			if j == size - 1:
+				return b[i][j]
+
+
+	#check diagonal
+	if b[0][0] is not None:
+		for i in range(1, size):
+			if b[i][i] != b[i - 1][i - 1]:
+				break
+		if i == size - 1:
+			return b[i][i]
+
+	if b[0][size - 1] is not None:
+		for i in range(1, size):
+			if b[size - 1 - i][i] != b[size - i][i - 1]:
+				break
+		if i == size - 1:
+			return b[0][size - 1]
+
+	return None
+
+def guessHitAndPseudoHit(solution, guess):
+	s_dict = {}
+	for i, color in enumerate(solution):
+		if color not in s_dict:
+			s_dict[color] = {i : True}
+		else:
+			s_dict[color][i] = True
+
+	hit, pseudo_hit = 0, 0
+	for i, color in enumerate(guess):
+		if color in s_dict:
+			if i in s_dict[color]:
+				hit += 1
+			else:
+				pseudo_hit += 1
+	return hit, pseudo_hit
+
+def findStartAndEndIndiciesToMakeArraySorted(a):
+	"""
+	Given an array of integers, write a method to find indices m and n such that if you sorted elements m through n,the entire array would besorted.
+	Minimizen - m(that is, find the smallest such sequence).
+
+	Algo:
+	For Array:
+	1, 2, 4, 7, 10, 11, 7, 12, 6, 7, 16, 18, 19
+
+	Split to:
+	left: 1, 2, 4, 7, 10, 11
+	middle: 7, 12
+	right: 6, 7, 16, 18, 19
+
+	TO make:
+	min(middle) > end(left)
+	max(middle) < start(right)
+
+	So make can make:
+	left < mid < right
+
+	All need to do is:
+	1)Split
+	2)find min and max of middle
+	"""
+	def findMinMax(a, start, end):
+		min_value = a[start]
+		max_value = a[end]
+		for i in range(start, end + 1):
+			if a[i] < min_value:
+				min_value = a[i]
+			if a[i] > max_value:
+				max_value = a[i]
+		return min_value, max_value
+
+	length = len(a)
+	m_l, m_r = 0, length - 1
+	for i in range(length - 1):
+		if a[i] > a[i + 1]:
+			m_l = i
+			break
+
+	if m_l == 0:
+		# already sorted
+		return
+
+	for i in range(length - 1, m_l, -1):
+		if a[i - 1] > a[i]:
+			m_r = i - 1
+			break
+
+	min_mid, max_mid = findMinMax(a, m_l, m_r)
+	l, r = m_l, m_r
+	# find the index the more or equal than min_mid in the LEFT
+	for i in range(m_l):
+		if a[i] >= min_mid:
+			l = i
+			break
+
+	# find the index the less or equal than max_mid in the RIGHT
+	for i in range(length - 1, m_r, -1):
+		if a[i] <= max_mid:
+			r = i
+			break
+
+	return l, r
+
 if __name__ == '__main__':
-	n = [5, 1, 3, 4, 2, 0, -1]
+	n = [-1, 3, 5, 6, 8, 10]
 	# bublleSort(n)
 	# mergeSort(n, 0, len(n))
 	# quickSort(n, 0, len(n) - 1)
 	# print(n)
-	# print(binarySearch(n, 0, len(n) - 1, 3))
+	# print(binarySearch_Recursive(n, 0, len(n) - 1, 3))
+	# print(binarySearch(n, 5))
 	# root = getTree()
 	# print(DFS(root, 6).data)
 	# print(BFS(root, 6).data)
@@ -325,3 +481,10 @@ if __name__ == '__main__':
 	# print(findElementInSortedMatrix_Elimination(m, 11))
 	# peopleList = [(65, 100), (70, 150), (56, 90), (75, 190), (60, 95), (68, 110)]
 	# print(maxPeopleStack(peopleList, None, {}))
+
+	# solution = ['R', 'R', 'G', 'B']
+	# guess = ['R', 'Y', 'R', 'B']
+	# print(guessHitAndPseudoHit(solution, guess))
+
+	a = [1, 2, 4, 7, 10 ,7, 12, 6, 7, 16, 18, 19]
+	print(findStartAndEndIndiciesToMakeArraySorted(a))
