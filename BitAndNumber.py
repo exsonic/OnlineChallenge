@@ -1,6 +1,10 @@
 """
 Bobi Pu, bobi.pu@usc.edu
 """
+import math
+import random
+
+
 def swap_bit(a,b):
 	a = a ^ b
 	b = a ^ b
@@ -81,7 +85,7 @@ def numberToEnglishString_useStack(num):
 		tenIntList = ['', 'ten', 'twenty', 'thirty', 'fourty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
 		length = len(a)
 		if length > 3:
-			return numberToEnglishString(a)
+			return numberToEnglishString_useStack(a)
 
 		zeroCount = 0
 		for i in range(length):
@@ -197,6 +201,30 @@ def maxContiguousSum(a):
 
 	return start, end, maxSum
 
+def generateRand(start, end, isInt=True):
+	seed = random.random()
+	num = start + seed * (end - start)
+	return int(num) if isInt else num
+
+def findPairSumToValue(a, v):
+	indexDict = {}
+	for i, n in enumerate(a):
+		if n in indexDict:
+			indexDict[n].append(i)
+		else:
+			indexDict[n] = [i]
+
+	resultList = []
+	calculatedDict = {}
+	for i, n in enumerate(a):
+		remain = v - n
+		if remain >= 0 and remain in indexDict and remain not in calculatedDict:
+			calculatedDict[remain] = True
+			calculatedDict[i] = True
+			for index in indexDict[remain]:
+				resultList.append((i, index))
+
+	return resultList
 
 
 if __name__ == '__main__':
@@ -207,4 +235,6 @@ if __name__ == '__main__':
 	# print(compareTwoNumberWithoutComparator(3, 3))
 	# print(numberToEnglishString_useStack(12345777))
 	# print(numToString(123400115))
-	print(maxContiguousSum([1,2,-1,-2, 3, 4, 5]))
+	# print(maxContiguousSum([1,2,-1,-2, 3, 4, 5]))
+	# print(generateRand(10, 20))
+	print(findPairSumToValue(range(10), 3))
