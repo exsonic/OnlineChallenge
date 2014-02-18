@@ -226,6 +226,64 @@ def findPairSumToValue(a, v):
 
 	return resultList
 
+def addTwoNum_withoutArithmetic(a, b):
+	if b == 0:
+		return a
+	summation = a ^ b
+	carray = (a & b) << 1
+	return addTwoNum_withoutArithmetic(summation, carray)
+
+def equallyShuffleArray(a):
+	length = len(a)
+	for i in range(length - 1):
+		swapIndex = generateRand(i + 1, length)
+		temp = a[i]
+		a[i] = a[swapIndex]
+		a[swapIndex] = temp
+
+	return a
+
+def take_set_m_from_n_array(a, m):
+	if m > len(a):
+		return None
+	setDict = {}
+	while len(setDict) < m:
+		randIndex = generateRand(0, len(a))
+		setDict[a[randIndex]] = True
+		a.pop(randIndex)
+
+	return setDict
+
+def count_digit_n_in_num(num, d):
+	count = 0
+	while num > 0:
+		digit = num % 10
+		if digit == d:
+			count += 1
+	return count
+
+def count_2_in_range(num):
+	def count_2_in_range_at_digit(num, d):
+		powerOf10 = math.pow(10, d)
+		nextPowerOf10 = powerOf10 * 10
+		right = num % powerOf10
+
+		roundDown = num - num % nextPowerOf10
+		roundUp = roundDown + nextPowerOf10
+
+		digit = (num / powerOf10) % 10
+		if digit < 2:
+			return roundDown / 10
+		elif digit == 2:
+			return roundDown / 10 + right + 1
+		else:
+			return roundUp / 10
+
+	count = 0
+	for i in range(len(str(num))):
+		count += count_2_in_range_at_digit(num, i)
+
+	return count
 
 if __name__ == '__main__':
 	pass
@@ -237,4 +295,7 @@ if __name__ == '__main__':
 	# print(numToString(123400115))
 	# print(maxContiguousSum([1,2,-1,-2, 3, 4, 5]))
 	# print(generateRand(10, 20))
-	print(findPairSumToValue(range(10), 3))
+	# print(findPairSumToValue(range(10), 3))
+	# print(addTwoNum_withoutArithmetic(5, 1))
+	# print(equallyShuffleArray(range(10)))
+	print(take_set_m_from_n_array([1,2,3,4,5,5,6,6],3))

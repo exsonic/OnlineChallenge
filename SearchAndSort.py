@@ -3,6 +3,10 @@ Bobi Pu, bobi.pu@usc.edu
 """
 import copy
 
+def swap(a, i, j):
+	temp = a[i]
+	a[i] = a[j]
+	a[j] = temp
 
 def bublleSort(n):
 	"""
@@ -454,8 +458,60 @@ def findStartAndEndIndiciesToMakeArraySorted(a):
 
 	return l, r
 
+def selectionRank(a, left, right, rank):
+	"""
+	Selection Rank is an algorithm to find the "i-th" smallest (or largest) element in an array in linear time.
+	If the elements are unique, you can find the ith smallest element in expected 0(n).
+
+	The basic algorithm operates like this:
+	1. Pickarandomelementinthearrayanduseitasa"pivot."Partitionelementsaround the pivot, keeping track of the number of elements on the left side of the partition.
+	2. Ifthere areexactly i elements ontheleft, then you just return thebiggest element on the left.
+	3. If the left side is bigger than i, repeat the algorithm on just the left part of the array.
+	4. If the left side is smaller than i, repeat the algorithm on the right, but look for the element with rank i - lef tSize.
+	"""
+	def partition(a, left, right, pivot):
+		while True:
+			while left <= right and a[left] <= pivot:
+				left += 1
+			while left <= right and a[right] > pivot:
+				right -= 1
+			if left > right:
+				return left - 1
+			swap(a, left, right)
+
+	pivot = a[left + right / 2]
+	leftEnd = partition(a, left, right, pivot)
+
+	leftSize = leftEnd - left + 1
+	if leftSize == rank + 1:
+		return max(a[left, leftEnd])
+	elif rank < leftSize:
+		return selectionRank(a, left, leftEnd, rank)
+	else:
+		return selectionRank(a, leftEnd + 1, right, rank - leftSize)
+
+def n_largest_in_array(a, n):
+	"""
+	Solution:
+	0.just sort.
+	1.min - heap, if num is bigger than top-of-min_heap, pop top-of-min_heap, push value. time O(n log(m)), n is length of a, m is size of heap.
+	2.selection rank, find the index of rank n, numbers that left of n is n-largest. If unique element, average-time O(n)
+
+	here we use Heap
+	"""
+	import heapq
+	heap = a[:n]
+	heapq.heapify(heap)
+	for num in a[n:]:
+		if num > heap[0]:
+			heapq.heappushpop(heap, num)
+
+	return heap
+
+
 if __name__ == '__main__':
 	n = [-1, 3, 5, 6, 8, 10]
+	a = [1, 2, 4, 7, 10 ,7, 12, 6, 7, 16, 18, 19]
 	# bublleSort(n)
 	# mergeSort(n, 0, len(n))
 	# quickSort(n, 0, len(n) - 1)
@@ -486,5 +542,6 @@ if __name__ == '__main__':
 	# guess = ['R', 'Y', 'R', 'B']
 	# print(guessHitAndPseudoHit(solution, guess))
 
-	a = [1, 2, 4, 7, 10 ,7, 12, 6, 7, 16, 18, 19]
-	print(findStartAndEndIndiciesToMakeArraySorted(a))
+
+	# print(findStartAndEndIndiciesToMakeArraySorted(a))
+	print(n_largest_in_array(a, 3))

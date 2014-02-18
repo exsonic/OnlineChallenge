@@ -17,9 +17,9 @@ class Node(object):
 
 def getTree():
 	r = Node(3)
-	r.addLeft(2)
-	r.left.addLeft(1)
-	r.left.addRight(0)
+	r.addLeft(1)
+	r.left.addLeft(0)
+	r.left.addRight(2)
 	r.addRight(5)
 	r.right.addLeft(4)
 	r.right.addRight(6)
@@ -76,10 +76,29 @@ def findCommonAnccestorWithoutParent(root, a, b):
 	else:
 		return r if l is None else r, False
 
+def BST_to_double_linkedList(root, last_visit):
+	"""
+	In order travserse, left to prev, right to next. Ascending order.
+	"""
+	if root is None:
+		return last_visit
 
+	last_visit = BST_to_double_linkedList(root.left, last_visit)
+	if last_visit is not None:
+		last_visit.right = root
+	root.left = last_visit
+	last_visit = root
+	last_visit = BST_to_double_linkedList(root.right, last_visit)
+	return last_visit
 
 if __name__ == '__main__':
 	t = getTree()
 	t1 = getTree()
 	# print(findCommonAnccestorWithParent(t.left.right, t.left.left).data)
 	# print(findCommonAnccestorWithoutParent(t, t1, t.left.left)[0].data)
+	BST_to_double_linkedList(t, None)
+	while t.left is not None:
+		t = t.left
+	while t is not None:
+		print(t.data)
+		t = t.right
