@@ -1,6 +1,7 @@
 """
 Bobi Pu, bobi.pu@usc.edu
 """
+import heapq
 import math
 import random
 
@@ -285,6 +286,56 @@ def count_2_in_range(num):
 
 	return count
 
+def find_and_maintain_median_in_number_stream(numList):
+	"""
+	Use min heap and max heap.
+	Max heap for the values below the median, and a min heap for the values above the median.
+
+	We make maxHeap always equal or more than minHeap.
+	If maxHeap.size() > minHeap.size(),then maxHeap.top() will be the median.
+	If maxHeap.size() == minHeap. size(), then the average of maxHeap.top() and minHeap.top() will bethemedian.
+
+	Each heap update take O(log(n)) time.
+
+	For heapq module, there's no maxHeap, we just make all num negative, min heap will be max heap
+	"""
+
+	def addNewNum(minHeap, maxHeap, num):
+		if len(maxHeap) == len(minHeap):
+			# find the min(minheap.top, num) and push in max heap
+			if len(minHeap) > 0 and num > minHeap[0]:
+				min_top = heapq.heappushpop(minHeap, num)
+				heapq.heappush(maxHeap, -min_top)
+			else:
+				heapq.heappush(maxHeap, -num)
+		else:
+			# find the max(maxheap.top, num) and push in min heap
+			if maxHeap[0] > num:
+				max_top = -heapq.heappushpop(maxHeap, -num)
+				heapq.heappush(minHeap, max_top)
+			else:
+				heapq.heappush(minHeap, num)
+
+	def getMedian(minHeap, maxHeap):
+		# maxHeap is always equal or more than minHeap
+		if not maxHeap:
+			return None
+
+		if len(maxHeap) == len(minHeap):
+			return (-maxHeap[0] + minHeap[0]) / 2
+		else:
+			return -maxHeap[0]
+
+	maxHeap, minHeap = [], []
+	heapq.heapify(maxHeap)
+	heapq.heapify(minHeap)
+	for num in numList:
+		addNewNum(minHeap, maxHeap, num)
+
+	return getMedian(minHeap, maxHeap)
+
+
+
 if __name__ == '__main__':
 	pass
 	# a = 1
@@ -298,4 +349,5 @@ if __name__ == '__main__':
 	# print(findPairSumToValue(range(10), 3))
 	# print(addTwoNum_withoutArithmetic(5, 1))
 	# print(equallyShuffleArray(range(10)))
-	print(take_set_m_from_n_array([1,2,3,4,5,5,6,6],3))
+	# print(take_set_m_from_n_array([1,2,3,4,5,5,6,6],3))
+	print(find_and_maintain_median_in_number_stream([1,2,3,4,5,6,7]))
