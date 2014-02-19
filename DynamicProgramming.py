@@ -363,7 +363,41 @@ def highestStack_Recursive(boxList, bottom, stackMap):
 
 	return maxStack
 
+def findMaxSubMatrixSum(matrix):
+	def maxSubArray(a, n):
+		"""
+		Find the max sub array from index [0, n)
+		Time: O(n)
+		"""
+		maxSum, runningSum = 0, 0
+		startIndex, endIndex = 0, 0
+		for i in range(n):
+			runningSum += a[i]
+			if runningSum > maxSum:
+				endIndex = i
+				maxSum = runningSum
+			elif runningSum < 0:
+				startIndex = i
+				runningSum = 0
+		return maxSum, startIndex, endIndex
 
+	rowCount, colCount = len(matrix), len(matrix[0])
+
+	maxSum = 0
+	maxSubMatrixIndex = [0] * 4
+	for rowStart in range(0, rowCount):
+		# colSum store the sum of each col from rowStart to rowEnd
+		colSum = [0] * colCount
+		for rowEnd in range(rowStart, rowCount):
+			for i in range(colCount):
+				colSum[i] += matrix[rowEnd][i]
+			#so here, just find the max sub array of colSum, we can get the matrix sum
+			tempMaxSum,colStart, colEnd = maxSubArray(colSum, colCount)
+			if tempMaxSum > maxSum:
+				maxSum = tempMaxSum
+				maxSubMatrixIndex = [rowStart, colStart, rowEnd, colEnd]
+
+	return maxSum, maxSubMatrixIndex
 
 if __name__ == '__main__':
 	pass
@@ -391,3 +425,4 @@ if __name__ == '__main__':
 	# highestStack(boxList)
 	# highestStack_Recursive(boxList, None, stackMap)
 	# print(stackMap)
+	print(findMaxSubMatrixSum([[1,2,3], [4,5,6], [7,8,-9]]))

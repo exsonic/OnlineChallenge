@@ -188,6 +188,32 @@ def LCSequence(s1, s2):
 
 	print(longest_sequence)
 
+def change_one_word_to_another_and_one_char_at_a_time(w1, w2, dictionary, cache, resultList):
+	"""
+	w1 is from word, w2 is target word.
+
+	Each time you do a change, the changed word must still be in dictionary.
+	It's a search problem.
+	We can use DFS. Time complexity: O(m * n), m is len(w1), n is len(dictionary)
+	"""
+	if w1 == w2:
+		return True
+
+	if w1 in cache:
+		return cache[w1]
+
+	for i in range(len(w1)):
+		if w1[i] != w2[i]:
+			new_word = w1[:i] + w2[i] + w1[i+1:]
+			if new_word in dictionary:
+				result = change_one_word_to_another_and_one_char_at_a_time(new_word, w2, dictionary, cache, resultList)
+				if result:
+					resultList.insert(0, new_word)
+					return True
+	cache[w1] = False
+	return False
+
+
 if __name__ == '__main__':
 	pass
 	# xmlStrign = '<family lastName="McDowell" state="CA">\n<person firstName="Gayle">Some Message</person>\n</family>'
@@ -196,5 +222,11 @@ if __name__ == '__main__':
 	# print(splitStringToWord('iathedoctor', 0, wordDict, {}))
 	# print(findShortesDistanceBetweenTwoArray([1, 2, 3, 5], [4, 10, 20,30]))
 	# print(isSubString('abced', 'abc'))
-	print(LCString('abcdefghijk', 'efghi'))
-	LCSequence('aabbccdd', 'abcde')
+
+	# print(LCString('abcdefghijk', 'efghi'))
+	# LCSequence('aabbccdd', 'abcde')
+
+	resultList = []
+	change_one_word_to_another_and_one_char_at_a_time('abc', 'edf', dict(zip(['abc', 'edf', 'ebc', 'ebf', 'adc', 'adf', 'abf', 'adf', 'edf'], [True] * 9)), {}, resultList)
+	resultList.insert(0, 'abc')
+	print(resultList)

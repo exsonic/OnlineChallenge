@@ -334,7 +334,17 @@ def find_and_maintain_median_in_number_stream(numList):
 
 	return getMedian(minHeap, maxHeap)
 
+def allSubset(a, i):
+	if i == len(a):
+		return [[]]
 
+	result = allSubset(a, i+1)
+	length = len(result)
+	for j in range(length - 1, -1, -1):
+		result.append(list(result[j]))
+		result[j].append(a[i])
+
+	return result
 
 if __name__ == '__main__':
 	pass
@@ -350,4 +360,5 @@ if __name__ == '__main__':
 	# print(addTwoNum_withoutArithmetic(5, 1))
 	# print(equallyShuffleArray(range(10)))
 	# print(take_set_m_from_n_array([1,2,3,4,5,5,6,6],3))
-	print(find_and_maintain_median_in_number_stream([1,2,3,4,5,6,7]))
+	# print(find_and_maintain_median_in_number_stream([1,2,3,4,5,6,7]))
+	print(allSubset([1,2,3], 0))

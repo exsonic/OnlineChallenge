@@ -508,6 +508,31 @@ def n_largest_in_array(a, n):
 
 	return heap
 
+def findCelebrity(peopleList):
+	"""
+	celebrity knows everyone, everyone knows celebrity. For relationship between others, call knows(a, b), return true or false
+	"""
+	def knows(a, b):
+		if b == 0 or (a != 0 and b != 0 and (a + b) % 2 ==0):
+			return True
+		else:
+			return False
+
+	while len(peopleList) > 1:
+		foundCelebrity = True
+		for i in range(1, len(peopleList)):
+			if knows(peopleList[0], peopleList[i]):
+				foundCelebrity = False
+				if knows(peopleList[i], peopleList[0]):
+					peopleList.pop(0)
+					peopleList.pop(0)
+				else:
+					peopleList.pop(0)
+				break
+		if foundCelebrity:
+			return peopleList[0]
+	return None
+
 
 if __name__ == '__main__':
 	n = [-1, 3, 5, 6, 8, 10]
@@ -544,4 +569,6 @@ if __name__ == '__main__':
 
 
 	# print(findStartAndEndIndiciesToMakeArraySorted(a))
-	print(n_largest_in_array(a, 3))
+	# print(n_largest_in_array(a, 3))
+
+	print(findCelebrity([1, 2, 3, 0, 4, 5, 6, 7, 8]))
