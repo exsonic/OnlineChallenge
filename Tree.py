@@ -1,3 +1,6 @@
+import math
+import sys
+
 
 class SuffixTreeNode(object):
 
@@ -119,6 +122,18 @@ def findCommonAnccestorWithoutParent(root, a, b):
 	else:
 		return r if l is None else r, False
 
+def isBST(root):
+	if root is None:
+		return True
+
+	if root.left is not None and root.right is not None:
+		if root.left.data <= root.right.data:
+			return isBST(root.left) and isBST(root.right)
+		else:
+			return False
+	else:
+		return isBST(root.left) and isBST(root.right)
+
 def BST_to_double_linkedList(root, last_visit):
 	"""
 	In order travserse, left to prev, right to next. Ascending order.
@@ -146,6 +161,68 @@ def searchWordListInLongString(string, wordList):
 		resutlList.append(res)
 	return resutlList
 
+def serializeBinaryTree(root):
+	"""
+	User pre-order tranverse
+	"""
+	if not root:
+		print('#')
+	else:
+		print(root.data)
+		serializeBinaryTree(root.left)
+		serializeBinaryTree(root.right)
+
+def deserializeBinaryTree(parent, isLeft, dataList, index):
+	"""
+	Has problem in Python, can't pass reference, we have to pass parent
+	"""
+	if index >= len(dataList):
+		return None, index + 1
+	if dataList[index] != '#':
+		node = Node(dataList[index])
+		if isLeft and parent is not None:
+			parent.left = node
+		elif not isLeft and parent is not None:
+			parent.right = node
+		_, index = deserializeBinaryTree(node, True, dataList, index + 1)
+		_, index = deserializeBinaryTree(node, False, dataList, index)
+		return node, index
+	else:
+		return None, index + 1
+
+def serializeBST(root):
+	"""
+	User pre-order tranverse, this is the only way that parent come firt than child
+	"""
+	if root:
+		print(root.data)
+		serializeBinaryTree(root.left)
+		serializeBinaryTree(root.right)
+
+
+def deserializeBST(min_v, max_v, parent, isLeft, dataList, index):
+	"""
+	Set min, max value to reconstruct
+	"""
+	if index >= len(dataList):
+		return None, index + 1
+
+	value = dataList[index]
+	if max_v > value > min_v:
+		node = Node(value)
+		if parent is not None:
+			if isLeft:
+				parent.left = node
+			else:
+				parent.right = node
+		_, index = deserializeBST(min_v, value, node, True, dataList, index + 1)
+		_, index = deserializeBST(value, max_v, node, False, dataList, index)
+		return node, index
+	else:
+		return None, index
+
+
+
 if __name__ == '__main__':
 	t = getTree()
 	t1 = getTree()
@@ -158,4 +235,10 @@ if __name__ == '__main__':
 	# 	print(t.data)
 	# 	t = t.right
 
-	print(searchWordListInLongString('I am a jerk, how a about you?', ['jerk',' me']))
+	# print(searchWordListInLongString('I am a jerk, how a about you?', ['jerk',' me']))
+	# print(serializeBinaryTree(t))
+	# root, n = deserializeBinaryTree(None, True, [1,3, '#', '#', 2, '#', '#'], 0)
+	# print(root)
+
+	root, _ = deserializeBST(-sys.maxint, sys.maxint, None, True, [5, 1, 0, 2, 7, 6, 8], 0)
+	print(root)

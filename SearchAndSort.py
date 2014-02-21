@@ -2,6 +2,8 @@
 Bobi Pu, bobi.pu@usc.edu
 """
 import copy
+import heapq
+
 
 def swap(a, i, j):
 	temp = a[i]
@@ -145,7 +147,6 @@ def getSqrt(x):
 			start = mid
 
 	return start
-
 
 def DFS(root, data):
 	if root is None:
@@ -533,6 +534,72 @@ def findCelebrity(peopleList):
 			return peopleList[0]
 	return None
 
+def kBest_heap(a, b, k):
+	"""
+	Use heap, return k-best of (a_elem + b_elem)
+	a and b is sorted in desc order.
+
+	HAS PROBLEM in getting next index!!!
+	"""
+	def getNextIndex(i, j, indexDict):
+		v1_0, v1_1 = i,  j + 1
+		if v1_1 == len(b):
+			v1_1 = 0
+			v1_0 += 1
+			while a[v1_0] + b[v1_1] in indexDict:
+				v1_1 += 1
+		v2_0, v2_1 = i + 1, j
+		if v2_0 == len(a):
+			v2_0 = 0
+			v2_1 += 1
+			while a[v2_0] + b[v2_1] in indexDict:
+				v1_1 += 1
+		return v1_0, v1_1, v2_0, v2_1
+
+	if not a or not b or k == 0:
+		return []
+
+	#push the first in heap
+	v = a[0] + b[0]
+	heap = [-v]
+	indexDict = {v : (0, 0)}
+	poped = 0
+	while poped < k:
+		v = -heapq.heappop(heap)
+		poped += 1
+		print(v)
+		i, j = indexDict[v]
+		v1_0, v1_1, v2_0, v2_1 = getNextIndex(i, j, indexDict)
+		v1, v2 = a[v1_0] + b[v1_1], a[v2_0] + b[v2_1]
+		indexDict[v1] = (v1_0, v1_1)
+		indexDict[v2] = (v2_0, v2_1)
+		heapq.heappush(heap, -v1)
+		heapq.heappush(heap, -v2)
+
+def rotatedArray_binary_search(a, n):
+	"""
+	array a is rotated, search n.
+	return index
+	"""
+	start = -1
+	end = len(a)
+	while end - start > 1:
+		mid = (end - start) / 2 + start
+		if a[mid] == n:
+			return n
+		if a[mid] > n:
+			#should on left side
+			end = mid
+		else:
+			#should on the right side
+			if a[mid] < a[0] <= n:
+				#left side
+				end = mid
+			else:
+				#right side
+				start = mid
+	return None
+
 
 if __name__ == '__main__':
 	n = [-1, 3, 5, 6, 8, 10]
@@ -571,4 +638,9 @@ if __name__ == '__main__':
 	# print(findStartAndEndIndiciesToMakeArraySorted(a))
 	# print(n_largest_in_array(a, 3))
 
-	print(findCelebrity([1, 2, 3, 0, 4, 5, 6, 7, 8]))
+	# print(findCelebrity([1, 2, 3, 0, 4, 5, 6, 7, 8]))
+
+	# kBestList = []
+	# kBest_heap([3,2,1], [1000,100,10], 5)
+	a = [6,7,8,9,10,11,1,2,3,4,5]
+	print(rotatedArray_binary_search(a, 10))

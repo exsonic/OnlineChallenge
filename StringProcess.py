@@ -226,7 +226,8 @@ if __name__ == '__main__':
 	# print(LCString('abcdefghijk', 'efghi'))
 	# LCSequence('aabbccdd', 'abcde')
 
-	resultList = []
-	change_one_word_to_another_and_one_char_at_a_time('abc', 'edf', dict(zip(['abc', 'edf', 'ebc', 'ebf', 'adc', 'adf', 'abf', 'adf', 'edf'], [True] * 9)), {}, resultList)
-	resultList.insert(0, 'abc')
-	print(resultList)
+	# resultList = []
+	# change_one_word_to_another_and_one_char_at_a_time('abc', 'edf', dict(zip(['abc', 'edf', 'ebc', 'ebf', 'adc', 'adf', 'abf', 'adf', 'edf'], [True] * 9)), {}, resultList)
+	# resultList.insert(0, 'abc')
+	# print(resultList)
+
